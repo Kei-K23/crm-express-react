@@ -1,4 +1,9 @@
-import { deleteByID, getAllUsers, updatedByID } from "../db/user";
+import {
+  deleteByID,
+  getAllUsers,
+  getUserBySessionToken,
+  updatedByID,
+} from "../db/user";
 import express from "express";
 
 export const userControllers = {
@@ -7,6 +12,17 @@ export const userControllers = {
       const users = await getAllUsers();
 
       return res.status(200).json(users);
+    } catch (e) {
+      console.log(e);
+      return res.status(400).json({ message: "something went wrong" });
+    }
+  },
+
+  getAuthUser: async function (req: express.Request, res: express.Response) {
+    try {
+      const sessionToke = req.cookies["crmCookie"];
+      const authUser = await getUserBySessionToken(sessionToke);
+      return res.status(200).json(authUser);
     } catch (e) {
       console.log(e);
       return res.status(400).json({ message: "something went wrong" });
@@ -38,7 +54,6 @@ export const userControllers = {
 
       const updatedUser = await updatedByID(id, req.body);
       await updatedUser.save();
-      console.log(updatedUser);
       return res.status(200).json(updatedUser);
     } catch (e) {
       console.log(e);

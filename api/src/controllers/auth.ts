@@ -10,7 +10,8 @@ import { expireDate } from "../lib/expireDate";
 export const authControllers = {
   register: async function (req: express.Request, res: express.Response) {
     try {
-      const { email, name, password, phone, address, role, photo } = req.body;
+      const { email, name, password, phone, address, role_id, photo } =
+        req.body;
 
       if (!email || !name || !password || !phone || !address) {
         return res.status(400).json({ message: "Missing request data fields" });
@@ -26,7 +27,7 @@ export const authControllers = {
         email,
         phone,
         address,
-        role,
+        role_id,
         photo,
         authentication: {
           salt,
@@ -34,10 +35,15 @@ export const authControllers = {
         },
       });
 
-      return res.status(201).json(createdUser);
+      return res.status(201).json({
+        data: createdUser,
+        loginLink: "http://localhost/auth/login",
+      });
     } catch (e) {
       console.log(e);
-      res.status(400).json({ message: "something went wrong" });
+      res.status(400).json({
+        message: "something went wrong",
+      });
     }
   },
   login: async function (req: express.Request, res: express.Response) {
@@ -72,7 +78,10 @@ export const authControllers = {
         path: "/",
         expires: expireDate(7),
       });
-      return res.status(200).json(user);
+      return res.status(200).json({
+        data: user,
+        accountLink: `http://localhost:8080/acc/${user._id}`,
+      });
     } catch (e) {
       console.log(e);
       res.status(400).json({ message: "something went wrong" });
