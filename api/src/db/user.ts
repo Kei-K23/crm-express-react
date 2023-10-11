@@ -46,7 +46,18 @@ const UserSchema = new mongoose.Schema({
   suspended: { type: Number, default: 0 },
   authentication: {
     salt: { type: String, select: false },
-    password: { type: String, required: true, select: false },
+    password: {
+      type: String,
+      required: true,
+      select: false,
+      validate: {
+        validator: function (value: string) {
+          return /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(value);
+        },
+        message:
+          "Password must be at least 6 characters and contain at least one uppercase and one lowercase letter.",
+      },
+    },
     sessionToken: { type: String, select: false },
   },
   created_at: {

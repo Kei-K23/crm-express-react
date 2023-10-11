@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { useReducer } from "react";
-
+import { useNavigate } from "react-router-dom";
 type INIT_STATEType = {
   name: string;
   email: string;
@@ -63,29 +63,30 @@ const reducer = (state: INIT_STATEType, action: ActionType) => {
 const Register = () => {
   const [state, dispatch] = useReducer(reducer, INIT_STATE);
   const { name, email, password, phone, address } = state;
-
+  const navigate = useNavigate();
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       if (!email || !name || !password || !phone || !address) return;
-      const res = await axios.post(
+      await axios.post(
         "http://localhost:8080/auth/register",
-        {
+        JSON.stringify({
           name,
           email,
           password,
           phone,
           address,
-        },
+        }),
         {
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
         }
       );
-      console.log(res.data);
+
+      navigate("/login");
     } catch (e) {
-      if (e instanceof AxiosError) return console.log(e.message);
+      if (e instanceof AxiosError) return console.log(e);
     }
   };
   return (

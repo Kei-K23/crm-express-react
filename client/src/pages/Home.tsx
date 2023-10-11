@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -15,7 +16,10 @@ const Home = () => {
   useEffect(() => {
     const cookie = getCookie("crmCookie");
 
-    if (!cookie) return navigate("/login");
+    if (!cookie) {
+      toast.error("Please login first!");
+      return navigate("/login");
+    }
 
     async function fetchData() {
       const res = await fetch(`http://localhost:8080/acc/${id}`, {
@@ -24,7 +28,11 @@ const Home = () => {
       });
       const data = await res.json();
       const { name, email, phone, address, photo, _id } = data;
-      if (_id !== id) return navigate("/login");
+      if (_id !== id) {
+        toast.error("Please login first!");
+        return navigate("/login");
+      }
+
       setUser({ name, email, phone, address, photo });
     }
     fetchData();
@@ -32,7 +40,6 @@ const Home = () => {
 
   function getCookie(n: string) {
     const cookies = document.cookie.split("; ");
-
     for (const cookie of cookies) {
       const [name, value] = cookie.split("=");
 
@@ -40,16 +47,21 @@ const Home = () => {
         return decodeURIComponent(value);
       }
     }
-
     return null;
   }
 
   async function handleClickLogOut() {
-    await fetch("http://localhost:8080/auth/logout", {
-      method: "GET",
-      credentials: "include",
-    });
-    return navigate("/login");
+    try {
+      await fetch("http://localhost:8080/auth/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+      toast.success("Successfully logout");
+      return navigate("/login");
+    } catch (e) {
+      console.error(e);
+      return toast.error("Something went wrong!");
+    }
   }
 
   return (

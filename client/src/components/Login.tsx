@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -44,6 +45,7 @@ const Login = () => {
 
       if (response.ok) {
         const { data } = await response.json();
+        toast.success("Successfully login");
         navigate(`/acc/${data._id}`);
       }
     } catch (e) {
