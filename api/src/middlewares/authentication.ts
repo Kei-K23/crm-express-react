@@ -63,7 +63,7 @@ export async function isAuthenticatedWithSession(
 
     if (!sessionToken)
       return res.status(403).json({
-        message: "User is not register",
+        message: "User is not register 1",
         register_link: "http://localhost:8080/auth/register",
       });
 
@@ -71,7 +71,7 @@ export async function isAuthenticatedWithSession(
 
     if (!existingUser)
       return res.status(403).json({
-        message: "User is not register",
+        message: "User is not register 2",
         register_link: "http://localhost:8080/auth/register",
       });
 
@@ -97,7 +97,7 @@ export async function isAuthenticatedWithID(
 
     if (existingUser._id.toString() !== id)
       return res.status(403).json({
-        message: "User is not register",
+        message: "User is not register 3",
         register_link: "http://localhost:8080/auth/register",
       });
 

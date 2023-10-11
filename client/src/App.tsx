@@ -4,17 +4,12 @@ import Home from "./pages/Home";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    children: [
-      {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path: "login",
-        element: <Entry />,
-      },
-    ],
+    path: "/acc/:id",
+    element: <Home />,
+  },
+  {
+    path: "/login",
+    element: <Entry />,
   },
 ]);
 

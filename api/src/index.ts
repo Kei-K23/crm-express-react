@@ -8,21 +8,26 @@ import routers from "./routers";
 require("dotenv").config();
 
 import mongoose from "mongoose";
-import { UserRole } from "./db/user";
 
 const port = 8080;
 const url = "mongodb://127.0.0.1:27018/crm";
 const app = express();
 
+app.use(cookieParser());
+app.use((req, res, next) => {
+  console.log(req.cookies["crmCookie"]);
+  next();
+});
+
 app.use(
   cors({
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
 
 app.use(compression());
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 mongoose.connect(url);
 mongoose.connection.on("error", (error: Error) => console.log(error));

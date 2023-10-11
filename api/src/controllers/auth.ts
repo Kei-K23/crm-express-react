@@ -60,7 +60,7 @@ export const authControllers = {
           register_link: "http://localhost:8080/auth/register",
         });
 
-      const authHash = authentication(user.authentication.salt, password);
+      const authHash = authentication(user.authentication?.salt, password);
       if (authHash !== user.authentication.password)
         return res.status(403).json({
           message: "User is not register",
@@ -81,6 +81,21 @@ export const authControllers = {
       return res.status(200).json({
         data: user,
         accountLink: `http://localhost:8080/acc/${user._id}`,
+      });
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ message: "something went wrong" });
+    }
+  },
+  logout: async function (req: express.Request, res: express.Response) {
+    try {
+      const sessionToken = req.cookies["crmCookie"];
+      if (!sessionToken)
+        return res.status(400).json({ message: "Cannot not logout" });
+
+      res.clearCookie("crmCookie", {
+        domain: "localhost",
+        path: "/",
       });
     } catch (e) {
       console.log(e);

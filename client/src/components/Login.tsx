@@ -1,7 +1,8 @@
-import axios, { AxiosError } from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -29,21 +30,24 @@ const Login = () => {
     e.preventDefault();
     if (!loginData.email || !loginData.password) return;
     try {
-      const res = await axios.post(
-        "http://localhost:8080/auth/login",
-        {
+      const response = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           email: loginData.email,
           password: loginData.password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-      console.log(res);
+        }),
+      });
+
+      if (response.ok) {
+        const { data } = await response.json();
+        navigate(`/acc/${data._id}`);
+      }
     } catch (e) {
-      if (e instanceof AxiosError) console.log(e.message);
+      console.log(e);
     }
   };
 

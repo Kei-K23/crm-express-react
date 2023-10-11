@@ -1,14 +1,33 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Home = () => {
   const navigate = useNavigate();
-
+  const { id } = useParams();
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    photo: "",
+  });
   useEffect(() => {
     const cookie = getCookie("crmCookie");
 
-    if (!cookie) navigate("/login");
+    if (!cookie) return navigate("/login");
+
+    async function fetchData() {
+      const res = await fetch(`http://localhost:8080/acc/${id}`, {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      const { name, email, phone, address, photo, _id } = data;
+      if (_id !== id) return navigate("/login");
+      setUser({ name, email, phone, address, photo });
+    }
+    fetchData();
   }, []);
 
   function getCookie(n: string) {
@@ -16,6 +35,7 @@ const Home = () => {
 
     for (const cookie of cookies) {
       const [name, value] = cookie.split("=");
+
       if (name === n) {
         return decodeURIComponent(value);
       }
@@ -24,7 +44,15 @@ const Home = () => {
     return null;
   }
 
-  return <div>Home</div>;
+  return (
+    <div>
+      <h2>Name: {user.name}</h2>
+      <h2>Name: {user.email}</h2>
+      <h2>Name: {user.phone}</h2>
+      <h2>Name: {user.address}</h2>
+      <h2>Name: {user.photo}</h2>
+    </div>
+  );
 };
 
 export default Home;

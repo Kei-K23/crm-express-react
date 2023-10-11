@@ -7,5 +7,5 @@
     "sourceMap": true,
     "noImplicitAny": true
   },
-  "include": ["api/src/**/*"]
+  "include": ["src/**/*"]
 }
