@@ -20,6 +20,7 @@ export default function (router: express.Router) {
     isAuthenticatedWithID,
     userControllers.getAuthUser
   );
+  router.get("/acc", userControllers.getAuthUser);
   router.delete(
     "/users/:id",
     isAuthenticatedWithSession,

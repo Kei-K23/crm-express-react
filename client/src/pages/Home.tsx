@@ -1,18 +1,26 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
 import { useNavigate, useParams } from "react-router-dom";
+import UserCard from "../components/UserCard";
+import { getCookie } from "../lib/getCookie";
+
+type UserType = {
+  _id?: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  photo: string;
+  role_id: string;
+};
 
 const Home = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-    photo: "",
-  });
+  const [user, setUser] = useState<UserType | null>(null);
+
+  const [allUsers, setAllUsers] = useState<UserType[]>();
+
   useEffect(() => {
     const cookie = getCookie("crmCookie");
 
@@ -21,34 +29,33 @@ const Home = () => {
       return navigate("/login");
     }
 
-    async function fetchData() {
+    async function fetchUserData() {
       const res = await fetch(`http://localhost:8080/acc/${id}`, {
         method: "GET",
         credentials: "include",
       });
       const data = await res.json();
-      const { name, email, phone, address, photo, _id } = data;
+      const { name, email, phone, address, photo, role_id, _id } = data;
       if (_id !== id) {
         toast.error("Please login first!");
         return navigate("/login");
       }
+      setUser({ name, email, phone, address, photo, role_id });
 
-      setUser({ name, email, phone, address, photo });
-    }
-    fetchData();
-  }, []);
-
-  function getCookie(n: string) {
-    const cookies = document.cookie.split("; ");
-    for (const cookie of cookies) {
-      const [name, value] = cookie.split("=");
-
-      if (name === n) {
-        return decodeURIComponent(value);
+      if (role_id !== "2") return;
+      async function fetchAllUsersData() {
+        const res = await fetch(`http://localhost:8080/users/`, {
+          method: "GET",
+          credentials: "include",
+        });
+        const data = await res.json();
+        console.log(data);
+        setAllUsers([...data]);
       }
+      fetchAllUsersData();
     }
-    return null;
-  }
+    fetchUserData();
+  }, []);
 
   async function handleClickLogOut() {
     try {
@@ -66,12 +73,44 @@ const Home = () => {
 
   return (
     <div>
-      <h2>Name: {user.name}</h2>
-      <h2>Name: {user.email}</h2>
-      <h2>Name: {user.phone}</h2>
-      <h2>Name: {user.address}</h2>
-      <h2>Name: {user.photo}</h2>
-      <button onClick={handleClickLogOut}>Logout</button>
+      <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mt-8">
+        Welcome back, <span className="text-sky-400">{user?.name}</span>
+      </h1>
+      <UserCard
+        email={user?.email}
+        name={user?.name}
+        phone={user?.phone}
+        photo={user?.photo}
+        address={user?.address}
+        role_id={user?.role_id}
+      />
+      <div className="flex justify-center items-center mb-10">
+        <button
+          className="disabled:text-slate-200 disabled:bg-red-700 disabled:scale-100 disabled:cursor-not-allowed border border-black py-2 px-5 text-xl rounded-xl bg-red-500 text-white hover:scale-105 hover:bg-red-600 active:scale-95 "
+          onClick={handleClickLogOut}
+        >
+          Logout
+        </button>
+      </div>
+      {allUsers && allUsers.length > 0 && (
+        <>
+          <hr />
+          <p className="text-2xl text-center mt-8">All User lists</p>
+          <div>
+            {allUsers?.map((user) => (
+              <UserCard
+                key={user._id}
+                name={user.name}
+                email={user.email}
+                address={user.address}
+                phone={user.phone}
+                photo={user.phone}
+                role_id={user.role_id}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };
