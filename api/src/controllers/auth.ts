@@ -97,6 +97,7 @@ export const authControllers = {
         domain: "localhost",
         path: "/",
       });
+      return res.status(200).json({ message: "Logout successfully" });
     } catch (e) {
       console.log(e);
       res.status(400).json({ message: "something went wrong" });

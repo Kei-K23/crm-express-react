@@ -44,6 +44,14 @@ const Home = () => {
     return null;
   }
 
+  async function handleClickLogOut() {
+    await fetch("http://localhost:8080/auth/logout", {
+      method: "GET",
+      credentials: "include",
+    });
+    return navigate("/login");
+  }
+
   return (
     <div>
       <h2>Name: {user.name}</h2>
@@ -51,6 +59,7 @@ const Home = () => {
       <h2>Name: {user.phone}</h2>
       <h2>Name: {user.address}</h2>
       <h2>Name: {user.photo}</h2>
+      <button onClick={handleClickLogOut}>Logout</button>
     </div>
   );
 };

@@ -14,10 +14,6 @@ const url = "mongodb://127.0.0.1:27018/crm";
 const app = express();
 
 app.use(cookieParser());
-app.use((req, res, next) => {
-  console.log(req.cookies["crmCookie"]);
-  next();
-});
 
 app.use(
   cors({
