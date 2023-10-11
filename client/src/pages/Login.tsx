@@ -9,9 +9,14 @@ const LoginPage = () => {
         CRM = Customer Relationship Model
       </h2>
       <Login />
-      <Link to={"/register"}>
-        <p>If you don't have an account! Register first</p>
-      </Link>
+
+      <div className="flex justify-center items-center">
+        <Link to={"/register"}>
+          <span className="hover:underline hover:text-blue-400 text-lg md:text-xl">
+            If you don't have an account! Register first
+          </span>
+        </Link>
+      </div>
     </>
   );
 };
