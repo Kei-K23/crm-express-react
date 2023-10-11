@@ -4,11 +4,15 @@ import Register from "../components/Register";
 const RegisterPage = () => {
   return (
     <>
-      <h1>RegisterPage</h1>
+      <h1 className="text-center text-2xl md:text-3xl mt-8">RegisterPage</h1>
       <Register />
-      <Link to={"/login"}>
-        <p>If you already register! Please login </p>
-      </Link>
+      <div className="flex justify-center items-center">
+        <Link to={"/login"}>
+          <span className="hover:underline hover:text-blue-400 text-lg md:text-xl">
+            If you already register! Please login{" "}
+          </span>
+        </Link>
+      </div>
     </>
   );
 };
