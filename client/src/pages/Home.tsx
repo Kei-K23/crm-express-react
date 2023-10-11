@@ -40,7 +40,7 @@ const Home = () => {
         toast.error("Please login first!");
         return navigate("/login");
       }
-      setUser({ name, email, phone, address, photo, role_id });
+      setUser({ name, email, phone, address, photo, role_id, _id });
 
       if (role_id !== "2") return;
       async function fetchAllUsersData() {
@@ -76,6 +76,7 @@ const Home = () => {
       <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mt-8">
         Welcome back, <span className="text-sky-400">{user?.name}</span>
       </h1>
+
       <UserCard
         email={user?.email}
         name={user?.name}
@@ -83,6 +84,7 @@ const Home = () => {
         photo={user?.photo}
         address={user?.address}
         role_id={user?.role_id}
+        _id={user?._id}
       />
       <div className="flex justify-center items-center mb-10">
         <button
@@ -106,6 +108,7 @@ const Home = () => {
                 phone={user.phone}
                 photo={user.phone}
                 role_id={user.role_id}
+                _id={user._id}
               />
             ))}
           </div>

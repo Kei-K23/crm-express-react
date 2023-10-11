@@ -35,6 +35,14 @@ export const userControllers = {
       if (!id)
         return res.status(400).json({ message: "Missing request fields" });
       await deleteByID(id);
+
+      const sessionToken = req.cookies["crmCookie"];
+
+      res.clearCookie("crmCookie", {
+        domain: "localhost",
+        path: "/",
+      });
+
       return res.status(200).json({ message: `User deleted with id ${id}` });
     } catch (e) {
       console.log(e);
