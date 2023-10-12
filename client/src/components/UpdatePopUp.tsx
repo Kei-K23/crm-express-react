@@ -1,8 +1,8 @@
 import axios, { AxiosError } from "axios";
-import { useReducer, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { passwordValidation } from "../lib/validation";
+import { useEffect, useReducer } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
 type INIT_STATEType = {
   name: string;
   email: string;
@@ -62,21 +62,45 @@ const reducer = (state: INIT_STATEType, action: ActionType) => {
   }
 };
 
-const Register = () => {
+type Props = {
+  handleClickForUpdatePopUp: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  prop_name?: string;
+  prop_email?: string;
+  prop_phone?: string;
+  prop_address?: string;
+  prop_photo?: string;
+  prop_role_id?: string;
+  _id?: string;
+};
+
+const UpdatePopUp = ({
+  handleClickForUpdatePopUp,
+  prop_address,
+  prop_email,
+  prop_name,
+  prop_phone,
+  _id,
+}: Props) => {
   const [state, dispatch] = useReducer(reducer, INIT_STATE);
-  const { name, email, password, phone, address } = state;
-  const [isValidPassword, setIsValidPassword] = useState(false);
+  useEffect(() => {
+    dispatch({ type: "ONCHANGE_NAME", payload: prop_name as string });
+    dispatch({ type: "ONCHANGE_EMAIL", payload: prop_email as string });
+    dispatch({ type: "ONCHANGE_PHONE", payload: prop_phone as string });
+    dispatch({ type: "ONCHANGE_ADDRESS", payload: prop_address as string });
+  }, []);
+  const { address, email, name, phone } = state;
+
   const navigate = useNavigate();
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      if (!email || !name || !password || !phone || !address) return;
-      await axios.post(
-        "http://localhost:8080/auth/register",
+      if (!email || !name || !phone || !address) return;
+
+      await axios.put(
+        `http://localhost:8080/users/${_id}`,
         JSON.stringify({
           name,
           email,
-          password,
           phone,
           address,
         }),
@@ -84,9 +108,10 @@ const Register = () => {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       );
-      toast.success("Successfully register new user");
+      toast.success(`Updated user with ID ${_id}`);
       navigate("/login");
     } catch (e) {
       if (e instanceof AxiosError) return console.log(e);
@@ -95,19 +120,18 @@ const Register = () => {
 
   function check(state: INIT_STATEType) {
     return (
-      state.name !== "" &&
-      state.email !== "" &&
-      state.password !== "" &&
-      state.phone !== "" &&
-      state.address !== "" &&
-      isValidPassword === true
+      state.name !== prop_name ||
+      state.email !== prop_email ||
+      state.phone !== prop_phone ||
+      state.address !== prop_address
     );
   }
+
   return (
     <>
       <form
         onSubmit={handleFormSubmit}
-        className="rounded-2xl block mx-auto mt-10 mb-4 w-[95%] md:w-[70%] lg:w-[65%] xl:w-[50%] border-2 border-sky-400 py-4 px-8 bg-sky-400"
+        className="rounded-2xl block mx-auto mt-10 mb-4 w-[95%] md:w-[70%] lg:w-[65%] xl:w-[50%] border-2 border-slate-400 py-4 px-8 bg-slate-400"
       >
         <div className="flex flex-col gap-2 my-4">
           <label htmlFor="name" className="text-lg">
@@ -141,28 +165,7 @@ const Register = () => {
             required
           />
         </div>
-        <div className="flex flex-col gap-2 my-4">
-          <label className="text-lg" htmlFor="password">
-            Password:
-          </label>
-          <input
-            className="border-2 border-black py-2 px-4 text-lg"
-            id="password"
-            type="password"
-            placeholder="password..."
-            value={password}
-            onChange={(e) => {
-              setIsValidPassword(passwordValidation(e.target.value));
-              dispatch({ type: "ONCHANGE_PASSWORD", payload: e.target.value });
-            }}
-            required
-          />
-          <span
-            className={`${isValidPassword ? "hidden" : "block"} text-red-500`}
-          >
-            *password must be length 6 including 1 uppercase, 1 lowercase
-          </span>
-        </div>
+
         <div className="flex flex-col gap-2 my-4">
           <label className="text-lg" htmlFor="phone">
             Phone:
@@ -194,16 +197,24 @@ const Register = () => {
             required
           ></textarea>
         </div>
-        <button
-          disabled={check(state) ? false : true}
-          className="disabled:text-slate-200 disabled:bg-sky-700 disabled:scale-100 disabled:cursor-not-allowed border border-black py-2 px-5 text-xl rounded-xl bg-sky-500 text-white hover:scale-105 hover:bg-sky-600 active:scale-95"
-          type="submit"
-        >
-          Register
-        </button>
+        <div className="flex justify-center items-center gap-4">
+          <button
+            disabled={check(state) ? false : true}
+            className="disabled:text-slate-200 disabled:bg-sky-700 disabled:scale-100 disabled:cursor-not-allowed border border-black py-2 px-5 text-xl rounded-xl bg-sky-500 text-white hover:scale-105 hover:bg-sky-600 active:scale-95"
+            type="submit"
+          >
+            Update
+          </button>
+          <button
+            className=" border border-black py-2 px-5 text-xl rounded-xl bg-green-500 text-white hover:scale-105 hover:bg-green-600 active:scale-95"
+            onClick={handleClickForUpdatePopUp}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </>
   );
 };
 
-export default Register;
+export default UpdatePopUp;

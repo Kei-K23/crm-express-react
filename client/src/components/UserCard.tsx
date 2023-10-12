@@ -2,6 +2,8 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import Layer from "./Layer";
 import { useNavigate } from "react-router-dom";
+import DeletePopUp from "./DeletePopUp";
+import UpdatePopUp from "./UpdatePopUp";
 
 type Props = {
   name?: string;
@@ -13,13 +15,33 @@ type Props = {
   _id?: string;
 };
 
-const UserCard = ({ name, email, address, phone, role_id, _id }: Props) => {
+const UserCard = ({
+  name,
+  email,
+  address,
+  photo,
+  phone,
+  role_id,
+  _id,
+}: Props) => {
   const navigate = useNavigate();
 
   const [isShowPopUpForDelete, setIsShowPopUpForDelete] = useState(false);
+  const [isShowPopUpForUpdate, setIsShowPopUpForUpdate] = useState(false);
 
-  function handleClickForDeletePopUp() {
-    setIsShowPopUpForDelete((prev) => !prev);
+  function handleClickForDeletePopUp(e: React.MouseEvent) {
+    if (e.target !== e.currentTarget) {
+      return e.stopPropagation();
+    } else {
+      setIsShowPopUpForDelete((prev) => !prev);
+    }
+  }
+  function handleClickForUpdatePopUp(e: React.MouseEvent) {
+    if (e.target !== e.currentTarget) {
+      return e.stopPropagation();
+    } else {
+      setIsShowPopUpForUpdate((prev) => !prev);
+    }
   }
 
   async function handleDeleteUser(id: string) {
@@ -28,7 +50,7 @@ const UserCard = ({ name, email, address, phone, role_id, _id }: Props) => {
         method: "DELETE",
         credentials: "include",
       });
-      toast.success("Successfully deleted your account");
+      toast.success(`Successfully deleted account with ID ${id}`);
       return navigate("/login");
     } catch (e) {
       console.error(e);
@@ -39,16 +61,28 @@ const UserCard = ({ name, email, address, phone, role_id, _id }: Props) => {
   return (
     <>
       {isShowPopUpForDelete && (
-        <Layer>
-          <div className="bg-slate-200 p-4">
-            <h2 className="text-2xl lg:text-3xl text-red-600">Are you sure?</h2>
-            <div>
-              <button onClick={() => _id && handleDeleteUser(_id)}>
-                Delete
-              </button>
-              <button onClick={handleClickForDeletePopUp}>Cancel</button>
-            </div>
-          </div>
+        <Layer handleClosePopUp={handleClickForDeletePopUp}>
+          <DeletePopUp
+            _id={_id}
+            name={name}
+            handleDeleteUser={handleDeleteUser}
+            handleClickForDeletePopUp={handleClickForDeletePopUp}
+          />
+        </Layer>
+      )}
+
+      {isShowPopUpForUpdate && (
+        <Layer handleClosePopUp={handleClickForUpdatePopUp}>
+          <UpdatePopUp
+            _id={_id}
+            prop_name={name}
+            prop_address={address}
+            prop_email={email}
+            prop_phone={phone}
+            prop_photo={photo}
+            prop_role_id={role_id}
+            handleClickForUpdatePopUp={handleClickForUpdatePopUp}
+          />
         </Layer>
       )}
       <div className="relative rounded-2xl block mx-auto mt-10 mb-4 w-[95%] md:w-[70%] lg:w-[65%] xl:w-[50%] border-2 border-sky-400 py-4 px-8 bg-sky-400">
@@ -81,12 +115,18 @@ const UserCard = ({ name, email, address, phone, role_id, _id }: Props) => {
           {role_id === "1" ? "User" : "Admin"}
         </h3>
 
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center gap-4">
           <button
             className="border border-black py-2 px-5 text-xl rounded-xl bg-red-500 text-white hover:scale-105 hover:bg-red-600 active:scale-95 "
             onClick={handleClickForDeletePopUp}
           >
             Delete
+          </button>
+          <button
+            className="border border-black py-2 px-5 text-xl rounded-xl bg-green-500 text-white hover:scale-105 hover:bg-green-600 active:scale-95 "
+            onClick={handleClickForUpdatePopUp}
+          >
+            Update
           </button>
         </div>
       </div>

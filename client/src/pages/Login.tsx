@@ -31,7 +31,7 @@ const LoginPage = () => {
 
   return (
     <>
-      <h1 className="text-center text-3xl font-bold">Login to our CRM</h1>
+      <h1 className="text-center text-3xl font-bold mt-8">Login to our CRM</h1>
       <h2 className="text-center text-xl text-slate-700 font-bold">
         CRM = Customer Relationship Model
       </h2>
